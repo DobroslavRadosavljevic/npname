@@ -63,15 +63,16 @@ const parseResponseStatus = (
   status: number,
   ok: boolean,
   isScopedOrOrg: boolean
-): boolean => {
+): boolean | null => {
   if (ok) {
     return false;
   }
   if (status === 404) {
     return true;
   }
+  // 401/403 for scoped packages means we can't determine availability (auth required)
   if (isScopedOrOrg && (status === 401 || status === 403)) {
-    return true;
+    return null;
   }
   throw new Error(`Unexpected response status: ${status}`);
 };
@@ -122,7 +123,9 @@ const prepareRequest = (
   return { headers, isScopedOrOrg, packageUrl, timeout };
 };
 
-const executeRequest = async (prepared: PreparedRequest): Promise<boolean> => {
+const executeRequest = async (
+  prepared: PreparedRequest
+): Promise<boolean | null> => {
   try {
     const response = await fetch(prepared.packageUrl, {
       headers: prepared.headers,
@@ -140,12 +143,13 @@ const executeRequest = async (prepared: PreparedRequest): Promise<boolean> => {
 };
 
 /**
- * Check if a package name is available on npm
+ * Check if a package name is available on npm.
+ * Returns true if available, false if taken, null if unknown (auth required).
  */
 export const checkAvailability = (
   name: string,
   options?: AvailabilityOptions
-): Promise<boolean> => {
+): Promise<boolean | null> => {
   if (typeof name !== "string" || name.length === 0) {
     return Promise.reject(new Error("Package name required"));
   }
@@ -167,13 +171,13 @@ const createBatches = (names: string[], batchSize: number): string[][] => {
 
 const processBatchResults = (
   batchResults: InternalCheckResult[],
-  results: Map<string, boolean>,
+  results: Map<string, boolean | null>,
   errors: Error[]
 ): void => {
   for (const result of batchResults) {
     if (result.error) {
       errors.push(result.error);
-    } else if (result.available !== null) {
+    } else {
       results.set(result.name, result.available);
     }
   }
@@ -182,7 +186,7 @@ const processBatchResults = (
 const processBatches = async (
   batches: string[][],
   options: BatchOptions | undefined,
-  results: Map<string, boolean>,
+  results: Map<string, boolean | null>,
   errors: Error[]
 ): Promise<void> => {
   for (const batch of batches) {
@@ -195,18 +199,19 @@ const processBatches = async (
 };
 
 /**
- * Check availability of multiple package names
+ * Check availability of multiple package names.
+ * Returns true if available, false if taken, null if unknown (auth required).
  */
 export const checkAvailabilityMany = async (
   names: string[],
   options?: BatchOptions
-): Promise<Map<string, boolean>> => {
+): Promise<Map<string, boolean | null>> => {
   if (!Array.isArray(names)) {
     throw new TypeError(`Expected an array of names, got ${typeof names}`);
   }
 
   const concurrency = options?.concurrency ?? DEFAULT_CONCURRENCY;
-  const results = new Map<string, boolean>();
+  const results = new Map<string, boolean | null>();
   const errors: Error[] = [];
   const batches = createBatches(names, concurrency);
 

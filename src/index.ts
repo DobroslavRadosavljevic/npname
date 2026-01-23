@@ -13,19 +13,22 @@ import { parseName, validate } from "./validate";
 
 /**
  * Check if an npm package name is available on the registry.
+ * Returns true if available, false if taken, null if unknown (auth required).
  */
 const npname = (
   name: string,
   options?: AvailabilityOptions
-): Promise<boolean> => checkAvailability(name, options);
+): Promise<boolean | null> => checkAvailability(name, options);
 
 /**
  * Check availability of multiple package names in parallel.
+ * Returns true if available, false if taken, null if unknown (auth required).
  */
 npname.many = (
   names: string[],
   options?: BatchOptions
-): Promise<Map<string, boolean>> => checkAvailabilityMany(names, options);
+): Promise<Map<string, boolean | null>> =>
+  checkAvailabilityMany(names, options);
 
 /**
  * Validate a package name without checking registry availability.

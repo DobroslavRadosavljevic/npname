@@ -12,8 +12,9 @@ describe("checkAvailability", () => {
       expect(result).toBe(true);
     });
 
-    it("should return true for available scoped package with 401", async () => {
+    it("should return true for available scoped package (404 on public registry)", async () => {
       const result = await checkAvailability("@nonexistent-scope-xyz/pkg-test");
+      // Public npm registry returns 404 for non-existent scoped packages
       expect(result).toBe(true);
     });
   });
@@ -48,9 +49,10 @@ describe("checkAvailability", () => {
   });
 
   describe("organization checks", () => {
-    it("should return boolean for organization availability check", async () => {
+    it("should return boolean or null for organization availability check", async () => {
       const result = await checkAvailability("@vercel");
-      expect(typeof result).toBe("boolean");
+      // Returns false (taken), true (available), or null (auth required)
+      expect([true, false, null]).toContain(result);
     });
 
     it("should throw InvalidNameError for organization name with trailing slash", async () => {
@@ -63,6 +65,7 @@ describe("checkAvailability", () => {
       const result = await checkAvailability(
         "@this-org-definitely-does-not-exist-xyz123"
       );
+      // npmjs.com returns 404 for non-existent orgs
       expect(result).toBe(true);
     });
   });
