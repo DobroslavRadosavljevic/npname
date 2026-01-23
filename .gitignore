@@ -4,3 +4,6 @@ dist
 .DS_Store
 
 .mcp.json
+
+# opensrc - source code for packages
+opensrc/
