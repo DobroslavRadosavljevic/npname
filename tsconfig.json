@@ -1,16 +1,12 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": [
-      "es2023"
-    ],
+    "lib": ["es2023"],
     "moduleDetection": "force",
     "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": [
-      "bun"
-    ],
+    "types": ["bun"],
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,
@@ -20,10 +16,6 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "opensrc"
-  ]
+  "include": ["src"],
+  "exclude": ["opensrc"]
 }
