@@ -85,6 +85,8 @@ $ npname <name> [names...]
 | `--json, -j`     | Output as JSON for scripting           |
 | `--quiet, -q`    | Minimal output (exit codes only)       |
 | `--concurrency`  | Parallel requests (default: 4)         |
+| `--help`         | Show help message                      |
+| `--version`      | Show version number                    |
 
 ### Exit Codes
 

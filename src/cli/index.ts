@@ -20,6 +20,8 @@ const cli = meow(
     --json, -j          Output as JSON for scripting
     --quiet, -q         Minimal output, just exit codes
     --concurrency       Parallel requests for batch checks (default: 4)
+    --help              Show this help message
+    --version           Show version number
 
   Exit Codes
     0                   All names available/valid
@@ -34,6 +36,8 @@ const cli = meow(
     $ npname foo bar baz --json
 `,
   {
+    autoHelp: true,
+    autoVersion: true,
     flags: {
       check: { default: false, shortFlag: "c", type: "boolean" },
       concurrency: { default: 4, type: "number" },
