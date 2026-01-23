@@ -1,0 +1,49 @@
+{
+  "name": "npm-ts-start",
+  "version": "1.0.0",
+  "description": "A starter for creating a TypeScript npm package.",
+  "keywords": [
+    "npm",
+    "package",
+    "typescript"
+  ],
+  "homepage": "https://github.com/dobroslavradosavljevic/npm-ts-start#readme",
+  "bugs": {
+    "url": "https://github.com/dobroslavradosavljevic/npm-ts-start/issues"
+  },
+  "license": "MIT",
+  "author": "Dobroslav Radosavljevic <dobroslav.radosavljevic@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dobroslavradosavljevic/npm-ts-start.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "bun test",
+    "lint": "bun ultracite check",
+    "format": "bun ultracite fix",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bumpp": "^10.3.2",
+    "oxfmt": "^0.26.0",
+    "oxlint": "^1.41.0",
+    "tsdown": "^0.18.1",
+    "typescript": "^5.9.3",
+    "ultracite": "7.0.12"
+  }
+}
