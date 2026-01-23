@@ -15,7 +15,6 @@ A comprehensive npm package name library that combines validation, availability 
 - 🏷️ **Parse** scoped package names (`@scope/name`)
 - 🔐 **Registry auth** support (Bearer, Basic, legacy tokens)
 - 💡 **Suggestions** for invalid names (URL-safe alternatives)
-- 🚀 **Zero dependencies** for core functionality (only `speakingurl` for suggestions)
 - 📝 **Full TypeScript** support with detailed types
 - 💻 **Powerful CLI** with JSON output, validation mode, and batch checking
 
