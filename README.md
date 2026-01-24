@@ -4,6 +4,7 @@
 
 [![npm version](https://img.shields.io/npm/v/npname.svg)](https://www.npmjs.com/package/npname)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Agent Skill](https://img.shields.io/badge/Agent_Skill-skills.sh-blue)](https://skills.sh)
 
 A comprehensive npm package name library that combines validation, availability checking, and registry utilities in one lightweight package.
 
@@ -17,6 +18,17 @@ A comprehensive npm package name library that combines validation, availability 
 - 💡 **Suggestions** for invalid names (URL-safe alternatives)
 - 📝 **Full TypeScript** support with detailed types
 - 💻 **Powerful CLI** with JSON output, validation mode, and batch checking
+- 🤖 **AI Agent Skill** for Claude Code, Cursor, Copilot, and 20+ AI tools
+
+## 🤖 AI Agent Skill
+
+This package is available as an [Agent Skill](https://skills.sh) for AI coding assistants like Claude Code, Cursor, Copilot, and more.
+
+```bash
+npx skills add dobroslavradosavljevic/npname
+```
+
+Once installed, your AI agent will know how to validate npm package names and check availability on the registry.
 
 ## 📥 Installation
 
