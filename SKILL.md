@@ -21,13 +21,13 @@ npx npname <name> [names...]
 
 ### Options
 
-| Option           | Description                            |
-| ---------------- | -------------------------------------- |
-| `--validate, -v` | Validate only (no network check)       |
-| `--check, -c`    | Full check with detailed output        |
-| `--registry, -r` | Custom registry URL                    |
-| `--json, -j`     | Output as JSON for scripting           |
-| `--quiet, -q`    | Minimal output (exit codes only)       |
+| Option           | Description                      |
+| ---------------- | -------------------------------- |
+| `--validate, -v` | Validate only (no network check) |
+| `--check, -c`    | Full check with detailed output  |
+| `--registry, -r` | Custom registry URL              |
+| `--json, -j`     | Output as JSON for scripting     |
+| `--quiet, -q`    | Minimal output (exit codes only) |
 
 ### Examples
 
@@ -84,6 +84,7 @@ const results = await npname.many(["name1", "name2", "name3"]);
 ### Scoped Packages
 
 Within a scope (`@scope/name`), the name portion can:
+
 - Start with `-` or `_`
 - Use core module names
 - Use reserved names

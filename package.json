@@ -39,13 +39,14 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "test": "bun test tests/",
+    "test": "bun test",
     "lint": "bun ultracite check",
     "format": "bun ultracite fix",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run build",
-    "bump": "bun bumpp",
-    "release": "bun publish"
+    "bump": "bumpp --changelog",
+    "release": "bun publish",
+    "prepare": "husky"
   },
   "dependencies": {
     "chalk": "^5.6.2",
@@ -54,14 +55,21 @@
     "speakingurl": "^14.0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@types/bun": "latest",
     "@types/speakingurl": "^13.0.6",
     "bumpp": "^10.3.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "oxfmt": "^0.26.0",
     "oxlint": "^1.41.0",
     "tsdown": "^0.18.1",
     "typescript": "^5.9.3",
     "ultracite": "7.0.12"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,md,yml,yaml}": "bun ultracite fix"
   },
   "engines": {
     "node": ">=18"
