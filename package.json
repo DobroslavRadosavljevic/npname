@@ -22,7 +22,7 @@
     "url": "git+https://github.com/dobroslavradosavljevic/npname.git"
   },
   "bin": {
-    "npname": "./dist/cli.mjs"
+    "npname": "dist/cli.mjs"
   },
   "files": [
     "dist"
