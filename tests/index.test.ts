@@ -154,7 +154,7 @@ describe("getAuthToken() named export", () => {
     const auth = getAuthToken("https://registry.npmjs.org/");
 
     // Auth can be undefined (no .npmrc) or an object (has .npmrc)
-    expect([undefined, "object"]).toContain(typeof auth);
+    expect(["undefined", "object"]).toContain(typeof auth);
   });
 
   it("should handle DEFAULT_REGISTRY constant", () => {
@@ -162,7 +162,7 @@ describe("getAuthToken() named export", () => {
 
     // Result depends on user's .npmrc configuration
     // In CI there's no .npmrc so auth is undefined
-    expect([undefined, "object"]).toContain(typeof auth);
+    expect(["undefined", "object"]).toContain(typeof auth);
   });
 });
 
