@@ -59,26 +59,22 @@ const printDetails = (result: CliResult): void => {
 
 const formatAvailabilityLine = (result: CliResult): void => {
   if (result.available === null) {
-    consola.warn(`${SYMBOLS.warning} ${result.name} - unknown`);
+    consola.warn(`${result.name} - unknown`);
   } else if (result.available) {
-    consola.success(`${SYMBOLS.available} ${result.name} - available`);
+    consola.success(`${result.name} - available`);
   } else {
-    consola.fail(`${SYMBOLS.unavailable} ${result.name} - unavailable`);
+    consola.fail(`${result.name} - unavailable`);
   }
   printDetails(result);
 };
 
 const formatValidationLine = (result: CliResult): void => {
   if (result.validForNewPackages) {
-    consola.success(
-      `${SYMBOLS.available} ${result.name} - valid for new packages`
-    );
+    consola.success(`${result.name} - valid for new packages`);
   } else if (result.valid) {
-    consola.warn(
-      `${SYMBOLS.warning} ${result.name} - valid for old packages only`
-    );
+    consola.warn(`${result.name} - valid for old packages only`);
   } else {
-    consola.fail(`${SYMBOLS.invalid} ${result.name} - invalid`);
+    consola.fail(`${result.name} - invalid`);
   }
   printDetails(result);
 };
@@ -88,7 +84,7 @@ const formatResultLine = (
   mode: "check" | "validate"
 ): void => {
   if (result.error) {
-    consola.error(`${SYMBOLS.invalid} ${result.name} - ${result.error}`);
+    consola.error(`${result.name} - ${result.error}`);
     return;
   }
 
