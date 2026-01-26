@@ -1,6 +1,6 @@
 {
   "name": "npname",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Validate npm package names and check availability on the registry",
   "keywords": [
     "available",
@@ -11,15 +11,15 @@
     "registry",
     "validate"
   ],
-  "homepage": "https://github.com/dobroslavradosavljevic/npname#readme",
+  "homepage": "https://github.com/DobroslavRadosavljevic/npname#readme",
   "bugs": {
-    "url": "https://github.com/dobroslavradosavljevic/npname/issues"
+    "url": "https://github.com/DobroslavRadosavljevic/npname/issues"
   },
   "license": "MIT",
   "author": "Dobroslav Radosavljevic <dobroslav.radosavljevic@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dobroslavradosavljevic/npname.git"
+    "url": "https://github.com/DobroslavRadosavljevic/npname"
   },
   "bin": {
     "npname": "dist/cli.mjs"
