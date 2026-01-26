@@ -1,6 +1,6 @@
 {
   "name": "npname",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Validate npm package names and check availability on the registry",
   "keywords": [
     "available",
