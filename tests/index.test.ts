@@ -160,8 +160,9 @@ describe("getAuthToken() named export", () => {
   it("should handle DEFAULT_REGISTRY constant", () => {
     const auth = getAuthToken(DEFAULT_REGISTRY);
 
-    // Result depends on user's .npmrc configuration - just check it doesn't throw
-    expect(auth).toBeDefined();
+    // Result depends on user's .npmrc configuration
+    // In CI there's no .npmrc so auth is undefined
+    expect([undefined, "object"]).toContain(typeof auth);
   });
 });
 
