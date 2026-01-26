@@ -9,5 +9,5 @@ export const runValidate = (names: string[], flags: CliFlags): void => {
   const results = names.map((name) => toCliResult(name, validate(name)));
 
   outputResults(results, flags, "validate");
-  process.exit(determineExitCode(results, flags));
+  process.exitCode = determineExitCode(results, flags);
 };

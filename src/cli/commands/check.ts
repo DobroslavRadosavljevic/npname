@@ -96,5 +96,5 @@ export const runCheck = async (
   ]);
 
   outputResults(results, flags, "check");
-  process.exit(determineExitCode(results, flags));
+  process.exitCode = determineExitCode(results, flags);
 };
