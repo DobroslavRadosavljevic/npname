@@ -1,74 +1,124 @@
-#!/usr/bin/env node
-import meow from "meow";
+import { defineCommand, runMain } from "citty";
+import { consola } from "consola";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join, parse } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { runCli } from "./commands";
+import { runCheck } from "./commands/check";
+import { runFullCheck } from "./commands/full-check";
+import { runValidate } from "./commands/validate";
+import { EXIT_CODES } from "./constants";
 import { type CliFlags } from "./types";
 
-const cli = meow(
-  `
-  Usage
-    $ npname <name> [names...]
+/**
+ * Find and read version from package.json by traversing up from current file.
+ */
+const getVersion = (): string => {
+  let dir = dirname(fileURLToPath(import.meta.url));
+  const { root } = parse(dir);
+  while (dir !== root) {
+    const pkgPath = join(dir, "package.json");
+    if (existsSync(pkgPath)) {
+      const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as {
+        version?: string;
+      };
+      return pkg.version ?? "0.0.0";
+    }
+    dir = dirname(dir);
+  }
+  return "0.0.0";
+};
 
-  Commands
-    <default>           Check if package name(s) are available
-    --validate, -v      Only validate name(s), no network check
-    --check, -c         Full check: validate + availability + details
-
-  Options
-    --registry, -r      Custom registry URL
-    --timeout, -t       Request timeout in milliseconds (default: 10000)
-    --json, -j          Output as JSON for scripting
-    --quiet, -q         Minimal output, just exit codes
-    --concurrency       Parallel requests for batch checks (default: 4)
-    --help              Show this help message
-    --version           Show version number
-
-  Exit Codes
-    0                   All names available/valid
-    1                   Some names unavailable or invalid
-    2                   Invalid arguments or errors
-
-  Examples
-    $ npname my-package
-    $ npname pkg1 pkg2 pkg3
-    $ npname @scope/package --registry https://npm.pkg.github.com/
-    $ npname "my pkg" --validate
-    $ npname foo bar baz --json
-`,
-  {
-    autoHelp: true,
-    autoVersion: true,
-    flags: {
-      check: { default: false, shortFlag: "c", type: "boolean" },
-      concurrency: { default: 4, type: "number" },
-      json: { default: false, shortFlag: "j", type: "boolean" },
-      quiet: { default: false, shortFlag: "q", type: "boolean" },
-      registry: { shortFlag: "r", type: "string" },
-      timeout: { default: 10_000, shortFlag: "t", type: "number" },
-      validate: { default: false, shortFlag: "v", type: "boolean" },
+const main = defineCommand({
+  args: {
+    check: {
+      alias: "c",
+      default: false,
+      description: "Full check: validate + availability + details",
+      type: "boolean",
     },
-    importMeta: import.meta,
-  }
-);
+    concurrency: {
+      default: "4",
+      description: "Parallel requests for batch checks",
+      type: "string",
+    },
+    json: {
+      alias: "j",
+      default: false,
+      description: "Output as JSON",
+      type: "boolean",
+    },
+    names: {
+      description: "Package name(s) to check",
+      required: true,
+      type: "positional",
+    },
+    quiet: {
+      alias: "q",
+      default: false,
+      description: "Minimal output",
+      type: "boolean",
+    },
+    registry: {
+      alias: "r",
+      description: "Custom registry URL",
+      type: "string",
+    },
+    timeout: {
+      alias: "t",
+      default: "10000",
+      description: "Request timeout in milliseconds",
+      type: "string",
+    },
+    validate: {
+      alias: "v",
+      default: false,
+      description: "Only validate name(s), no network check",
+      type: "boolean",
+    },
+  },
+  meta: {
+    description:
+      "Validate npm package names and check availability on the registry",
+    name: "npname",
+    version: getVersion(),
+  },
+  async run({ args }) {
+    // Collect all positional arguments (citty puts all in _ when multiple provided)
+    const allArgs = args._ as string[] | undefined;
+    const names =
+      allArgs && allArgs.length > 0 ? allArgs : [args.names as string];
 
-const flags: CliFlags = {
-  check: cli.flags.check,
-  concurrency: cli.flags.concurrency,
-  json: cli.flags.json,
-  quiet: cli.flags.quiet,
-  registry: cli.flags.registry,
-  timeout: cli.flags.timeout,
-  validate: cli.flags.validate,
-};
+    const flags: CliFlags = {
+      check: args.check,
+      concurrency: Number(args.concurrency),
+      json: args.json,
+      quiet: args.quiet,
+      registry: args.registry,
+      timeout: Number(args.timeout),
+      validate: args.validate,
+    };
 
-const main = async (): Promise<void> => {
-  try {
-    await runCli(cli.input, flags);
-  } catch (error) {
-    console.error(error);
-    process.exit(2);
-  }
-};
+    // Validate flags
+    if (Number.isNaN(flags.concurrency) || flags.concurrency < 1) {
+      consola.error("--concurrency must be a number >= 1");
+      process.exit(EXIT_CODES.ERROR);
+    }
+    if (Number.isNaN(flags.timeout) || flags.timeout <= 0) {
+      consola.error("--timeout must be a number > 0");
+      process.exit(EXIT_CODES.ERROR);
+    }
+
+    // Route to appropriate command
+    if (flags.validate) {
+      runValidate(names, flags);
+    } else if (flags.check) {
+      await runFullCheck(names, flags);
+    } else {
+      await runCheck(names, flags);
+    }
+  },
+});
 
 // eslint-disable-next-line jest/require-hook -- CLI entry point, not a test file
-main();
+runMain(main);
