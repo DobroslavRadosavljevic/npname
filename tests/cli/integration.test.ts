@@ -1,11 +1,14 @@
 import { describe, expect, it } from "bun:test";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const CLI = "./dist/cli.mjs";
+const TEST_DIR = dirname(fileURLToPath(import.meta.url));
+const CLI_ENTRY = resolve(TEST_DIR, "../../src/cli/index.ts");
 
 const runCli = async (
   args: string[]
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> => {
-  const proc = Bun.spawn([CLI, ...args], {
+  const proc = Bun.spawn([process.execPath, CLI_ENTRY, ...args], {
     stderr: "pipe",
     stdout: "pipe",
   });
@@ -152,6 +155,21 @@ describe("CLI Integration", () => {
       expect(stderr).toContain("concurrency");
     });
 
+    it("errors on non-integer concurrency", async () => {
+      const { exitCode, stderr } = await runCli(["test", "--concurrency=1.5"]);
+      expect(exitCode).toBe(2);
+      expect(stderr).toContain("concurrency");
+    });
+
+    it("errors on infinite concurrency", async () => {
+      const { exitCode, stderr } = await runCli([
+        "test",
+        "--concurrency=Infinity",
+      ]);
+      expect(exitCode).toBe(2);
+      expect(stderr).toContain("concurrency");
+    });
+
     it("errors on invalid timeout value", async () => {
       const { exitCode, stderr } = await runCli(["test", "--timeout=0"]);
       expect(exitCode).toBe(2);
@@ -166,6 +184,18 @@ describe("CLI Integration", () => {
 
     it("errors on NaN timeout", async () => {
       const { exitCode, stderr } = await runCli(["test", "--timeout=xyz"]);
+      expect(exitCode).toBe(2);
+      expect(stderr).toContain("timeout");
+    });
+
+    it("errors on non-integer timeout", async () => {
+      const { exitCode, stderr } = await runCli(["test", "--timeout=1.5"]);
+      expect(exitCode).toBe(2);
+      expect(stderr).toContain("timeout");
+    });
+
+    it("errors on infinite timeout", async () => {
+      const { exitCode, stderr } = await runCli(["test", "--timeout=Infinity"]);
       expect(exitCode).toBe(2);
       expect(stderr).toContain("timeout");
     });

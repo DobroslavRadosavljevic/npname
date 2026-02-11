@@ -48,19 +48,24 @@ npx npname foo bar --json
 ## Programmatic Usage
 
 ```typescript
-import npname from "npname";
+import {
+  check,
+  checkAvailability,
+  checkAvailabilityMany,
+  validate,
+} from "npname";
 
 // Check availability
-const isAvailable = await npname("my-package");
+const isAvailable = await checkAvailability("my-package");
 
 // Validate only (no network)
-const validation = npname.validate("my-package");
+const validation = validate("my-package");
 
 // Full check: validate + availability
-const result = await npname.check("my-package");
+const result = await check("my-package");
 
 // Batch check multiple names
-const results = await npname.many(["name1", "name2", "name3"]);
+const results = await checkAvailabilityMany(["name1", "name2", "name3"]);
 ```
 
 ## npm Naming Rules

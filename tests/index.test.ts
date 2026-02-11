@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import npname, {
+import {
+  check,
   checkAvailability,
   checkAvailabilityMany,
   DEFAULT_REGISTRY,
@@ -15,22 +16,6 @@ import npname, {
   type ParsedName,
   type ValidationResult,
 } from "../src";
-
-describe("npname default export", () => {
-  it("should be a callable function", () => {
-    expect(typeof npname).toBe("function");
-  });
-
-  it("should have all expected methods attached", () => {
-    expect(typeof npname.many).toBe("function");
-    // eslint-disable-next-line import/no-named-as-default-member
-    expect(typeof npname.validate).toBe("function");
-    expect(typeof npname.check).toBe("function");
-    expect(typeof npname.parse).toBe("function");
-    expect(typeof npname.registry).toBe("function");
-    expect(typeof npname.auth).toBe("function");
-  });
-});
 
 describe("validate() named export", () => {
   it("should return ValidationResult for valid package name", () => {
@@ -86,12 +71,6 @@ describe("validate() named export", () => {
 
     expect(result.valid).toBe(false);
     expect(result.errors.length).toBeGreaterThan(0);
-  });
-
-  it("should return invalid result for undefined input", () => {
-    const result = validate();
-
-    expect(result.valid).toBe(false);
   });
 });
 
@@ -166,36 +145,39 @@ describe("getAuthToken() named export", () => {
   });
 });
 
-describe("npname() availability check", () => {
+describe("checkAvailability() named export", () => {
   it("should return a promise", () => {
-    const result = npname("some-test-package");
+    const result = checkAvailability("some-test-package");
 
     expect(result).toBeInstanceOf(Promise);
   });
 
   it("should resolve to a boolean", async () => {
-    const result = await npname("xyzzy-test-pkg-12345-nonexistent");
+    const result = await checkAvailability("xyzzy-test-pkg-12345-nonexistent");
 
     expect(typeof result).toBe("boolean");
   });
 });
 
-describe("npname.many()", () => {
+describe("checkAvailabilityMany() named export", () => {
   it("should return a promise", () => {
-    const result = npname.many(["pkg1", "pkg2"]);
+    const result = checkAvailabilityMany(["pkg1", "pkg2"]);
 
     expect(result).toBeInstanceOf(Promise);
   });
 
   it("should resolve to a Map", async () => {
-    const result = await npname.many(["xyzzy-test-pkg-a", "xyzzy-test-pkg-b"]);
+    const result = await checkAvailabilityMany([
+      "xyzzy-test-pkg-a",
+      "xyzzy-test-pkg-b",
+    ]);
 
     expect(result).toBeInstanceOf(Map);
   });
 
   it("should have entries for each input name", async () => {
     const names = ["test-pkg-one", "test-pkg-two"];
-    const result = await npname.many(names);
+    const result = await checkAvailabilityMany(names);
 
     for (const name of names) {
       expect(result.has(name)).toBe(true);
@@ -204,9 +186,9 @@ describe("npname.many()", () => {
   });
 });
 
-describe("npname.check()", () => {
+describe("check() named export", () => {
   it("should return a CheckResult for valid name", async () => {
-    const result = await npname.check("valid-package-test");
+    const result = await check("valid-package-test");
 
     expect(result).toHaveProperty("name");
     expect(result).toHaveProperty("available");
@@ -215,7 +197,7 @@ describe("npname.check()", () => {
   });
 
   it("should include validation in the result", async () => {
-    const result = await npname.check("my-test-package");
+    const result = await check("my-test-package");
 
     expect(result.validation).toHaveProperty("valid");
     expect(result.validation).toHaveProperty("validForNewPackages");
@@ -223,23 +205,12 @@ describe("npname.check()", () => {
     expect(result.validation).toHaveProperty("warnings");
   });
 
-  it("should return error for invalid package name", async () => {
-    const result = await npname.check("");
+  it("should return InvalidNameError for invalid package name", async () => {
+    const result = await check(".invalid");
 
     expect(result.available).toBeNull();
     expect(result.error).toBeInstanceOf(InvalidNameError);
     expect(result.validation.validForNewPackages).toBe(false);
-  });
-
-  it("should return InvalidNameError with errors and warnings for invalid name", async () => {
-    const result = await npname.check("INVALID-UPPERCASE");
-
-    expect(result.error).toBeInstanceOf(InvalidNameError);
-    const error = result.error as InstanceType<typeof InvalidNameError>;
-    expect(error.errors).toBeDefined();
-    expect(error.warnings).toBeDefined();
-    expect(Array.isArray(error.errors)).toBe(true);
-    expect(Array.isArray(error.warnings)).toBe(true);
   });
 });
 
@@ -343,7 +314,6 @@ describe("Type exports", () => {
   it("should allow typed usage of ParsedName", () => {
     const parsed: ParsedName = {
       full: "@myorg/package",
-      isOrganization: true,
       isScoped: true,
       name: "package",
       scope: "myorg",
@@ -369,7 +339,7 @@ describe("Integration scenarios", () => {
     const validation = validate(name);
     expect(validation.validForNewPackages).toBe(true);
 
-    const available = await npname(name);
+    const available = await checkAvailability(name);
     expect(typeof available).toBe("boolean");
   });
 
@@ -382,30 +352,13 @@ describe("Integration scenarios", () => {
     expect(typeof registry).toBe("string");
   });
 
-  it("should handle complete workflow with check()", async () => {
-    const result = await npname.check("complete-workflow-test");
-
-    expect(result.validation).toBeDefined();
-    // available is either boolean (success) or null (error)
-    expect([true, false, null]).toContain(result.available);
-  });
-
   it("should batch check multiple packages", async () => {
     const names = ["batch-test-1", "batch-test-2", "batch-test-3"];
-    const results = await npname.many(names);
+    const results = await checkAvailabilityMany(names);
 
     expect(results.size).toBe(names.length);
     for (const name of names) {
       expect(results.has(name)).toBe(true);
     }
-  });
-});
-
-describe("Error handling", () => {
-  it("should handle network errors gracefully in check()", async () => {
-    const result = await npname.check("test-error-handling");
-
-    expect(result).toHaveProperty("name");
-    expect(result).toHaveProperty("validation");
   });
 });

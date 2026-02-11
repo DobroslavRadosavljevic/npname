@@ -2,7 +2,7 @@ import { consola } from "consola";
 
 import type { ValidationResult } from "../../types";
 
-import npname, { validate } from "../../index";
+import { checkAvailabilityMany, validate } from "../../index";
 import { type CliFlags, type CliResult } from "../types";
 import {
   determineExitCode,
@@ -25,7 +25,7 @@ export const checkValidNamesAvailability = async (
   }
 
   try {
-    const availabilityMap = await npname.many(validNames, {
+    const availabilityMap = await checkAvailabilityMany(validNames, {
       concurrency: flags.concurrency,
       registryUrl: flags.registry,
       timeout: flags.timeout,

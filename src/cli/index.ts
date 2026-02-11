@@ -29,6 +29,9 @@ const getVersion = (): string => {
   return "0.0.0";
 };
 
+const isPositiveInteger = (value: number): boolean =>
+  Number.isFinite(value) && Number.isInteger(value) && value > 0;
+
 const main = defineCommand({
   args: {
     check: {
@@ -100,13 +103,15 @@ const main = defineCommand({
     };
 
     // Validate flags
-    if (Number.isNaN(flags.concurrency) || flags.concurrency < 1) {
-      consola.error("--concurrency must be a number >= 1");
-      process.exit(EXIT_CODES.ERROR);
+    if (!isPositiveInteger(flags.concurrency)) {
+      consola.error("--concurrency must be a positive integer");
+      process.exitCode = EXIT_CODES.ERROR;
+      return;
     }
-    if (Number.isNaN(flags.timeout) || flags.timeout <= 0) {
-      consola.error("--timeout must be a number > 0");
-      process.exit(EXIT_CODES.ERROR);
+    if (!isPositiveInteger(flags.timeout)) {
+      consola.error("--timeout must be a positive integer");
+      process.exitCode = EXIT_CODES.ERROR;
+      return;
     }
 
     // Route to appropriate command

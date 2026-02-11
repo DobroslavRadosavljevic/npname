@@ -1,6 +1,6 @@
 import { consola } from "consola";
 
-import npname, { validate } from "../../index";
+import { check, validate } from "../../index";
 import { type CliFlags, type CliResult } from "../types";
 import { determineExitCode, outputResults, toCliResult } from "../utils/output";
 
@@ -20,7 +20,7 @@ export const runFullCheck = async (
     }
 
     try {
-      const checkResult = await npname.check(name, {
+      const checkResult = await check(name, {
         registryUrl: flags.registry,
         timeout: flags.timeout,
       });

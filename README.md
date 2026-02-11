@@ -18,6 +18,7 @@ A comprehensive npm package name library that combines validation, availability 
 - 💡 **Suggestions** for invalid names (URL-safe alternatives)
 - 📝 **Full TypeScript** support with detailed types
 - 💻 **Powerful CLI** with JSON output, validation mode, and batch checking
+- 🖥️ **Cross-platform CLI** with Unicode/ASCII symbol support (macOS, Linux, Windows)
 - 🤖 **AI Agent Skill** for Claude Code, Cursor, Copilot, and 20+ AI tools
 
 ## 🤖 AI Agent Skill
@@ -46,23 +47,37 @@ pnpm add npname
 bun add npname
 ```
 
+## ⚠️ Breaking Change (Named Exports Only)
+
+The default export was removed. Import APIs by name.
+
+```typescript
+// Old (removed)
+// import npname from "npname";
+// const result = await npname("my-package");
+
+// New
+import { checkAvailability } from "npname";
+
+const result = await checkAvailability("my-package");
+```
+
 ## 🚀 Quick Start
 
 ```typescript
-import npname from "npname";
+import { check, checkAvailability, validate } from "npname";
 
 // Check if a package name is available
-const isAvailable = await npname("my-awesome-package");
+const isAvailable = await checkAvailability("my-awesome-package");
 console.log(isAvailable); // true or false
 
 // Validate a package name (no network request)
-const validation = npname.validate("my-package");
+const validation = validate("my-package");
 console.log(validation.valid); // true
 
-// Full check: validate + check availability
-const result = await npname.check("my-package");
-console.log(result.available); // true, false, or null (if error)
-console.log(result.validation); // ValidationResult
+// Full check: validate + availability
+const details = await check("my-package");
+console.log(details.available); // true, false, or null
 ```
 
 ## 💻 CLI
@@ -87,17 +102,17 @@ $ npname <name> [names...]
 
 ### Commands & Options
 
-| Option           | Description                            |
-| ---------------- | -------------------------------------- |
-| `--validate, -v` | Validate only (no network check)       |
-| `--check, -c`    | Full check with detailed output        |
-| `--registry, -r` | Custom registry URL                    |
-| `--timeout, -t`  | Request timeout in ms (default: 10000) |
-| `--json, -j`     | Output as JSON for scripting           |
-| `--quiet, -q`    | Minimal output (exit codes only)       |
-| `--concurrency`  | Parallel requests (default: 4)         |
-| `--help`         | Show help message                      |
-| `--version`      | Show version number                    |
+| Option           | Description                                              |
+| ---------------- | -------------------------------------------------------- |
+| `--validate, -v` | Validate only (no network check)                         |
+| `--check, -c`    | Full check with detailed output                          |
+| `--registry, -r` | Custom registry URL                                      |
+| `--timeout, -t`  | Request timeout in ms (positive integer, default: 10000) |
+| `--json, -j`     | Output as JSON for scripting                             |
+| `--quiet, -q`    | Minimal output (exit codes only)                         |
+| `--concurrency`  | Parallel requests (positive integer, default: 4)         |
+| `--help`         | Show help message                                        |
+| `--version`      | Show version number                                      |
 
 ### Exit Codes
 
@@ -144,50 +159,58 @@ $ npname my-pkg --quiet && echo "Available!"
 
 ## 📖 API Reference
 
-### `npname(name, options?)` 🔍
+### `checkAvailability(name, options?)` 🔍
 
 Check if a package name is available on the npm registry.
 
 ```typescript
-const available = await npname("chalk"); // false (taken)
-const available = await npname("my-unique-pkg-xyz"); // true (available)
+import { checkAvailability } from "npname";
+
+const available = await checkAvailability("chalk"); // false (taken)
+const available = await checkAvailability("my-unique-pkg-xyz"); // true (available)
 
 // With custom registry
-const available = await npname("my-package", {
+const available = await checkAvailability("my-package", {
   registryUrl: "https://registry.mycompany.com/",
   timeout: 5000,
 });
 ```
 
-**Returns:** `Promise<boolean>`
+**Returns:** `Promise<boolean | null>`
 
 ---
 
-### `npname.many(names, options?)` 📦
+### `checkAvailabilityMany(names, options?)` 📦
 
 Check availability of multiple package names in parallel.
 
 ```typescript
-const results = await npname.many(["chalk", "lodash", "my-new-pkg"]);
+import { checkAvailabilityMany } from "npname";
+
+const results = await checkAvailabilityMany(["chalk", "lodash", "my-new-pkg"]);
 
 results.get("chalk"); // false
 results.get("lodash"); // false
 results.get("my-new-pkg"); // true
 
 // With concurrency control
-const results = await npname.many(names, { concurrency: 2 });
+const results = await checkAvailabilityMany(names, { concurrency: 2 });
 ```
 
-**Returns:** `Promise<Map<string, boolean>>`
+**Returns:** `Promise<Map<string, boolean | null>>`
+
+Throws `RangeError` if `options.concurrency` is not a positive integer.
 
 ---
 
-### `npname.validate(name)` ✅
+### `validate(name)` ✅
 
 Validate a package name without checking the registry.
 
 ```typescript
-const result = npname.validate("my-package");
+import { validate } from "npname";
+
+const result = validate("my-package");
 // {
 //   valid: true,
 //   validForNewPackages: true,
@@ -196,7 +219,7 @@ const result = npname.validate("my-package");
 //   warnings: []
 // }
 
-const result = npname.validate("UPPERCASE");
+const result = validate("UPPERCASE");
 // {
 //   valid: false,
 //   validForNewPackages: false,
@@ -206,7 +229,7 @@ const result = npname.validate("UPPERCASE");
 //   suggestions: ['uppercase']
 // }
 
-const result = npname.validate(".invalid");
+const result = validate(".invalid");
 // {
 //   valid: false,
 //   validForNewPackages: false,
@@ -220,12 +243,14 @@ const result = npname.validate(".invalid");
 
 ---
 
-### `npname.check(name, options?)` 🔎
+### `check(name, options?)` 🔎
 
 Full check: validates the name and checks availability.
 
 ```typescript
-const result = await npname.check("my-package");
+import { check } from "npname";
+
+const result = await check("my-package");
 // {
 //   name: 'my-package',
 //   available: true,
@@ -233,7 +258,7 @@ const result = await npname.check("my-package");
 // }
 
 // Invalid name returns error
-const result = await npname.check(".invalid");
+const result = await check(".invalid");
 // {
 //   name: '.invalid',
 //   available: null,
@@ -246,27 +271,27 @@ const result = await npname.check(".invalid");
 
 ---
 
-### `npname.parse(name)` 🏷️
+### `parseName(name)` 🏷️
 
 Parse a package name into its components.
 
 ```typescript
-npname.parse("my-package");
+import { parseName } from "npname";
+
+parseName("my-package");
 // {
 //   scope: null,
 //   name: 'my-package',
 //   full: 'my-package',
-//   isScoped: false,
-//   isOrganization: false
+//   isScoped: false
 // }
 
-npname.parse("@myorg/my-package");
+parseName("@myorg/my-package");
 // {
 //   scope: 'myorg',
 //   name: 'my-package',
 //   full: '@myorg/my-package',
-//   isScoped: true,
-//   isOrganization: true
+//   isScoped: true
 // }
 ```
 
@@ -274,25 +299,29 @@ npname.parse("@myorg/my-package");
 
 ---
 
-### `npname.registry(scope?)` 🌐
+### `getRegistryUrl(scope?)` 🌐
 
 Get the registry URL for a scope (or default registry).
 
 ```typescript
-npname.registry(); // 'https://registry.npmjs.org/'
-npname.registry("@myorg"); // Custom registry if configured in .npmrc
+import { getRegistryUrl } from "npname";
+
+getRegistryUrl(); // 'https://registry.npmjs.org/'
+getRegistryUrl("@myorg"); // Custom registry if configured in .npmrc
 ```
 
 **Returns:** `string`
 
 ---
 
-### `npname.auth(registryUrl)` 🔐
+### `getAuthToken(registryUrl)` 🔐
 
 Get authentication info for a registry URL.
 
 ```typescript
-const auth = npname.auth("https://registry.npmjs.org/");
+import { getAuthToken } from "npname";
+
+const auth = getAuthToken("https://registry.npmjs.org/");
 // {
 //   token: 'npm_xxxx',
 //   type: 'Bearer'
@@ -364,13 +393,14 @@ Within a scope (`@scope/name`), the package name portion can:
 - Use core module names (e.g., `@scope/http`)
 - Use reserved names (e.g., `@scope/node_modules`)
 
-## 🔧 Named Exports
+## 🔧 Exports
 
-All functions are also available as named exports:
+All public APIs are available as named exports:
 
 ```typescript
 import {
   validate,
+  check,
   parseName,
   checkAvailability,
   checkAvailabilityMany,
@@ -412,7 +442,7 @@ interface AvailabilityOptions {
 
 ```typescript
 interface BatchOptions extends AvailabilityOptions {
-  concurrency?: number; // Max parallel requests (default: 4)
+  concurrency?: number; // Max parallel requests (positive integer, default: 4)
 }
 ```
 
@@ -440,17 +470,20 @@ Environment variables are automatically expanded (`${VAR}` and `$VAR` syntax).
 
 ## 🌍 Environment Variables
 
-| Variable              | Description                                                |
-| --------------------- | ---------------------------------------------------------- |
-| `npm_config_registry` | Override default registry URL                              |
-| `NPM_CONFIG_REGISTRY` | Override default registry URL (lowercase takes precedence) |
+| Variable              | Description                                                                 |
+| --------------------- | --------------------------------------------------------------------------- |
+| `npm_config_registry` | Override default registry URL                                               |
+| `NPM_CONFIG_REGISTRY` | Override default registry URL (lowercase takes precedence)                  |
+| `NPNAME_ASCII`        | Set to `1` to force ASCII output symbols (useful on some Windows terminals) |
 
 ## 💡 Suggestions
 
 When a package name is invalid, the library provides suggestions:
 
 ```typescript
-const result = npname.validate("My Package!");
+import { validate } from "npname";
+
+const result = validate("My Package!");
 // {
 //   valid: false,
 //   suggestions: ['my-package']  // URL-safe, lowercase alternative
@@ -460,10 +493,14 @@ const result = npname.validate("My Package!");
 ## 🚨 Error Handling
 
 ```typescript
-import { InvalidNameError } from "npname";
+import {
+  InvalidNameError,
+  checkAvailability,
+  checkAvailabilityMany,
+} from "npname";
 
 try {
-  await npname(".invalid-name");
+  await checkAvailability(".invalid-name");
 } catch (error) {
   if (error instanceof InvalidNameError) {
     console.log(error.message); // 'Invalid package name: .invalid-name'
@@ -474,7 +511,7 @@ try {
 
 // Batch operations throw AggregateError
 try {
-  await npname.many([".invalid", "-also-invalid"]);
+  await checkAvailabilityMany([".invalid", "-also-invalid"]);
 } catch (error) {
   if (error instanceof AggregateError) {
     console.log(error.errors); // Array of InvalidNameError

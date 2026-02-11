@@ -225,6 +225,30 @@ describe("checkAvailabilityMany", () => {
       const results = await checkAvailabilityMany(names, { concurrency: 1 });
       expect(results.size).toBe(2);
     });
+
+    it("should throw RangeError for concurrency of 0", async () => {
+      await expect(
+        checkAvailabilityMany(["chalk"], { concurrency: 0 })
+      ).rejects.toThrow(RangeError);
+    });
+
+    it("should throw RangeError for negative concurrency", async () => {
+      await expect(
+        checkAvailabilityMany(["chalk"], { concurrency: -1 })
+      ).rejects.toThrow(RangeError);
+    });
+
+    it("should throw RangeError for NaN concurrency", async () => {
+      await expect(
+        checkAvailabilityMany(["chalk"], { concurrency: Number.NaN })
+      ).rejects.toThrow(RangeError);
+    });
+
+    it("should throw RangeError for non-integer concurrency", async () => {
+      await expect(
+        checkAvailabilityMany(["chalk"], { concurrency: 1.5 })
+      ).rejects.toThrow(RangeError);
+    });
   });
 
   describe("error handling", () => {

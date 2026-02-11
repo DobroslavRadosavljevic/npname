@@ -169,6 +169,9 @@ const createBatches = (names: string[], batchSize: number): string[][] => {
   return batches;
 };
 
+const isValidConcurrency = (value: number): boolean =>
+  Number.isFinite(value) && Number.isInteger(value) && value > 0;
+
 const processBatchResults = (
   batchResults: InternalCheckResult[],
   results: Map<string, boolean | null>,
@@ -211,6 +214,10 @@ export const checkAvailabilityMany = async (
   }
 
   const concurrency = options?.concurrency ?? DEFAULT_CONCURRENCY;
+  if (!isValidConcurrency(concurrency)) {
+    throw new RangeError("concurrency must be a positive integer");
+  }
+
   const results = new Map<string, boolean | null>();
   const errors: Error[] = [];
   const batches = createBatches(names, concurrency);
