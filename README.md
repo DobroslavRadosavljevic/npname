@@ -521,25 +521,45 @@ try {
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions from external contributors are welcome and appreciated.
+
+For full details, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### External Contributor Workflow
 
 ```bash
-# Clone the repo
-git clone https://github.com/dobroslavradosavljevic/npname.git
+# 1) Fork this repository on GitHub, then clone your fork
+git clone https://github.com/<your-username>/npname.git
 cd npname
 
-# Install dependencies
+# 2) Add upstream and create a branch from main
+git remote add upstream https://github.com/dobroslavradosavljevic/npname.git
+git fetch upstream
+git checkout -b feat/my-change upstream/main
+
+# 3) Install dependencies
 bun install
 
-# Run tests
-bun test
-
-# Build
-bun run build
-
-# Lint
+# 4) Run quality checks (same as CI)
 bun run lint
+bun run typecheck
+bun run build
+bun run test
+
+# 5) Commit using Conventional Commits (required by commitlint)
+git commit -m "feat: add better external contributor docs"
+
+# 6) Push branch to your fork and open a PR to main
+git push -u origin feat/my-change
 ```
+
+### Pull Request Checklist
+
+- Keep PRs focused and easy to review
+- Add or update tests for behavior changes
+- Update docs for user-facing changes
+- Ensure all CI checks pass (`lint`, `typecheck`, `build`, `test`)
+- Fill out the PR template with clear description and motivation
 
 ## 📄 License
 
