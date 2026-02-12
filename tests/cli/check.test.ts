@@ -1,9 +1,9 @@
 import { describe, expect, it, mock } from "bun:test";
 
+import type { CliFlags } from "../../src/cli/types";
 import type { ValidationResult } from "../../src/types";
 
 import { checkValidNamesAvailability } from "../../src/cli/commands/check";
-import { type CliFlags } from "../../src/cli/types";
 
 const createValidation = (
   overrides: Partial<ValidationResult> = {}

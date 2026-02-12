@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-import { type AuthInfo } from "./types";
+import type { AuthInfo } from "./types";
 
 export const DEFAULT_REGISTRY = "https://registry.npmjs.org/";
 

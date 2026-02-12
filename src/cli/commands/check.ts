@@ -1,9 +1,9 @@
 import { consola } from "consola";
 
 import type { ValidationResult } from "../../types";
+import type { CliFlags, CliResult } from "../types";
 
 import { checkAvailabilityMany, validate } from "../../index";
-import { type CliFlags, type CliResult } from "../types";
 import {
   determineExitCode,
   mergeResultsInOrder,

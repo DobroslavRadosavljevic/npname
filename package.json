@@ -1,6 +1,6 @@
 {
   "name": "npname",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Validate npm package names and check availability on the registry",
   "keywords": [
     "available",
@@ -40,8 +40,8 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "test": "bun test",
-    "lint": "bun ultracite check",
-    "format": "bun ultracite fix",
+    "lint": "ultracite check",
+    "format": "ultracite fix",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run build",
     "bump": "bumpp --changelog",
@@ -68,7 +68,7 @@
     "ultracite": "7.1.5"
   },
   "lint-staged": {
-    "*.{ts,js,json,md,yml,yaml}": "bun ultracite fix"
+    "*.{ts,js,json,md,yml,yaml}": "ultracite fix"
   },
   "engines": {
     "node": ">=18"

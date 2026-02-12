@@ -4,11 +4,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, parse } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { CliFlags } from "./types";
+
 import { runCheck } from "./commands/check";
 import { runFullCheck } from "./commands/full-check";
 import { runValidate } from "./commands/validate";
 import { EXIT_CODES } from "./constants";
-import { type CliFlags } from "./types";
 
 /**
  * Find and read version from package.json by traversing up from current file.

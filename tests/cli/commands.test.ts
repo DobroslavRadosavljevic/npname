@@ -1,7 +1,8 @@
 import { describe, expect, it } from "bun:test";
 
+import type { CliFlags, CliResult } from "../../src/cli/types";
+
 import { EXIT_CODES } from "../../src/cli/constants";
-import { type CliFlags, type CliResult } from "../../src/cli/types";
 import {
   determineExitCode,
   mergeResultsInOrder,
@@ -61,7 +62,8 @@ describe("toCliResult", () => {
   });
 
   it("should handle undefined validation", () => {
-    const result = toCliResult("test");
+    // oxlint-disable-next-line unicorn/no-useless-undefined
+    const result = toCliResult("test", undefined);
 
     expect(result.name).toBe("test");
     expect(result.valid).toBe(false);

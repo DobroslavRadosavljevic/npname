@@ -1,7 +1,8 @@
 import getSlug from "speakingurl";
 
+import type { ParsedName, ValidationResult } from "./types";
+
 import { BUILTIN_MODULES } from "./constants/builtins";
-import { type ParsedName, type ValidationResult } from "./types";
 
 const SCOPED_PACKAGE_PATTERN = /^(?:@([^/]+?)\/)?([^/]+?)$/;
 const SPECIAL_CHARS_PATTERN = /[~'!()*]/;

@@ -1,9 +1,9 @@
 import { consola } from "consola";
 
 import type { ValidationResult } from "../../types";
+import type { CliFlags, CliResult } from "../types";
 
 import { EXIT_CODES, SYMBOLS } from "../constants";
-import { type CliFlags, type CliResult } from "../types";
 
 /**
  * Convert a validation result to a CLI result.

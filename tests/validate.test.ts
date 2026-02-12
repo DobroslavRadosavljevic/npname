@@ -98,7 +98,8 @@ describe("validate - invalid names (type errors)", () => {
   });
 
   it("should reject undefined", () => {
-    const result = validate();
+    // oxlint-disable-next-line unicorn/no-useless-undefined
+    const result = validate(undefined);
     expect(result.validForNewPackages).toBe(false);
     expect(result.validForOldPackages).toBe(false);
     expect(result.errors).toContain("name cannot be undefined");

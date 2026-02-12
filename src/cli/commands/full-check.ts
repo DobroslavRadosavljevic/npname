@@ -1,7 +1,8 @@
 import { consola } from "consola";
 
+import type { CliFlags, CliResult } from "../types";
+
 import { check, validate } from "../../index";
-import { type CliFlags, type CliResult } from "../types";
 import { determineExitCode, outputResults, toCliResult } from "../utils/output";
 
 /**

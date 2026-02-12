@@ -1,5 +1,6 @@
+import type { CliFlags } from "../types";
+
 import { validate } from "../../index";
-import { type CliFlags } from "../types";
 import { determineExitCode, outputResults, toCliResult } from "../utils/output";
 
 /**

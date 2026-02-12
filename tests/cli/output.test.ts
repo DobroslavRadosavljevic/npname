@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 
-import { type CliFlags, type CliResult } from "../../src/cli/types";
+import type { CliFlags, CliResult } from "../../src/cli/types";
+
 import { outputResults } from "../../src/cli/utils/output";
 
 const createCliResult = (overrides: Partial<CliResult> = {}): CliResult => ({
